@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-class TemaController with ChangeNotifier {
-  bool _thema = true;
-  bool get getThema => _thema;
+class TemaController {
+  final ValueNotifier<bool> thema = ValueNotifier(true);
 
   void changeThema() {
-    _thema = !_thema;
-    notifyListeners();
+    thema.value = !thema.value;
   }
 }

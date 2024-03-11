@@ -8,21 +8,24 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
-  final TemaController _thema = TemaController();
+  final TemaController _temaController = TemaController();
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: _thema.getThema
-          ? ThemeData(
-              primarySwatch: Colors.blue,
-            )
-          : ThemeData.dark(),
-      home: FormScreen(
-        thema: _thema,
-      ),
-    );
+    return ValueListenableBuilder<bool>(
+        valueListenable: _temaController.thema,
+        builder: (BuildContext context, bool value, Widget? child) {
+          return MaterialApp(
+            title: 'Flutter Demo',
+            theme: value
+                ? ThemeData(
+                    primarySwatch: Colors.blue,
+                  )
+                : ThemeData.dark(),
+            home: FormScreen(
+              thema: _temaController,
+            ),
+          );
+        });
   }
 }
