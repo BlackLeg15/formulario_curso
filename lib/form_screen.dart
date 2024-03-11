@@ -55,7 +55,7 @@ class _FormScreenState extends State<FormScreen> {
                     child: TextFormField(
                       validator: (String? value) {
                         if (value != null && value.isEmpty) {
-                          return 'Insira o nome da tarefa';
+                          return 'Insira o nome';
                         }
 
                         return null;
@@ -95,7 +95,7 @@ class _FormScreenState extends State<FormScreen> {
                     child: TextFormField(
                       validator: (String? value) {
                         if (value!.isEmpty) {
-                          return 'Insira uma dificuldade entre 1 e 5';
+                          return 'Insira o telefone';
                         }
                         return null;
                       },
