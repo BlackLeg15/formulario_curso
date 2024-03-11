@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:formulario_curso/controller/tema_controller.dart';
 
 class FormScreen extends StatefulWidget {
-  const FormScreen({super.key});
+  const FormScreen({
+    super.key,
+    required this.thema,
+  });
+
+  final TemaController thema;
 
   @override
   State<FormScreen> createState() => _FormScreenState();
@@ -11,7 +17,6 @@ class _FormScreenState extends State<FormScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -21,6 +26,14 @@ class _FormScreenState extends State<FormScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Formulario'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                widget.thema.changeThema();
+              },
+              icon: const Icon(Icons.change_circle),
+            ),
+          ],
         ),
         body: Center(
           child: SingleChildScrollView(
@@ -100,7 +113,7 @@ class _FormScreenState extends State<FormScreen> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        print('Continuar');
+                        print('continuar...');
                       }
                     },
                     child: const Text('Continuar'),
