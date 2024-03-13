@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:formulario_curso/controller/tema_controller.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+
+import '../widgets/theme_inherited_widget.dart';
 
 class FormScreen extends StatefulWidget {
-  const FormScreen({
-    super.key,
-    required this.thema,
-  });
-
-  final TemaController thema;
+  const FormScreen({super.key});
 
   @override
   State<FormScreen> createState() => _FormScreenState();
@@ -19,6 +16,43 @@ class _FormScreenState extends State<FormScreen> {
   TextEditingController phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  late final FocusNode emailFocusNode;
+  late final FocusNode nameFocusNode;
+  late final FocusNode phoneFocusNode;
+
+  late MaskTextInputFormatter phoneMask;
+
+  @override
+  void initState() {
+    super.initState();
+    emailFocusNode = FocusNode();
+    nameFocusNode = FocusNode();
+    phoneFocusNode = FocusNode();
+    phoneMask = MaskTextInputFormatter(
+      mask: '(##) # ####-####',
+      filter: {
+        '#': RegExp('\\d'),
+      },
+    );
+    Future.delayed(const Duration(milliseconds: 300), () {
+      nameFocusNode.requestFocus();
+    });
+  }
+
+  void goNext() {
+    if (_formKey.currentState!.validate()) {
+      print('continuar...');
+    }
+  }
+
+  @override
+  void dispose() {
+    emailFocusNode.dispose();
+    nameFocusNode.dispose();
+    phoneFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -29,7 +63,17 @@ class _FormScreenState extends State<FormScreen> {
           actions: [
             IconButton(
               onPressed: () {
-                widget.thema.changeThema();
+                final themeInheritedWidget = context.getInheritedWidgetOfExactType<ThemeInheritedWidget>()!;
+                final temaController = themeInheritedWidget.temaController;
+                late ThemeMode chosenMode;
+                switch (temaController.themeMode.value) {
+                  case ThemeMode.dark:
+                    chosenMode = ThemeMode.light;
+                    break;
+                  default:
+                    chosenMode = ThemeMode.dark;
+                }
+                temaController.changeThema(chosenMode);
               },
               icon: const Icon(Icons.change_circle),
             ),
@@ -53,6 +97,7 @@ class _FormScreenState extends State<FormScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      focusNode: nameFocusNode,
                       validator: (String? value) {
                         if (value != null && value.isEmpty) {
                           return 'Insira o nome';
@@ -68,11 +113,15 @@ class _FormScreenState extends State<FormScreen> {
                         fillColor: Colors.white70,
                         filled: true,
                       ),
+                      onFieldSubmitted: (value) {
+                        emailFocusNode.requestFocus();
+                      },
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      focusNode: emailFocusNode,
                       validator: (String? value) {
                         if (value != null && value.isEmpty) {
                           return 'Insira o email';
@@ -88,11 +137,16 @@ class _FormScreenState extends State<FormScreen> {
                         fillColor: Colors.white70,
                         filled: true,
                       ),
+                      onFieldSubmitted: (value) {
+                        phoneFocusNode.requestFocus();
+                      },
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      inputFormatters: [phoneMask],
+                      focusNode: phoneFocusNode,
                       validator: (String? value) {
                         if (value!.isEmpty) {
                           return 'Insira o telefone';
@@ -108,14 +162,13 @@ class _FormScreenState extends State<FormScreen> {
                         fillColor: Colors.white70,
                         filled: true,
                       ),
+                      onFieldSubmitted: (value) {
+                        goNext();
+                      },
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        print('continuar...');
-                      }
-                    },
+                    onPressed: goNext,
                     child: const Text('Continuar'),
                   ),
                 ],
