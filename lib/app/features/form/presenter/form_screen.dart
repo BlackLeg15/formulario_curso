@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:formulario_curso/app/features/form/domain/value_objects/email_value_object.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-import '../widgets/theme_inherited_widget.dart';
+import '../../../core/theme/theme_inherited_widget.dart';
 
 class FormScreen extends StatefulWidget {
   const FormScreen({super.key});
@@ -22,9 +23,13 @@ class _FormScreenState extends State<FormScreen> {
 
   late MaskTextInputFormatter phoneMask;
 
+  late EmailValueObject emailValueObject;
+  String? emailError;
+
   @override
   void initState() {
     super.initState();
+    emailValueObject = const EmailValueObject(value: '');
     emailFocusNode = FocusNode();
     nameFocusNode = FocusNode();
     phoneFocusNode = FocusNode();
@@ -73,7 +78,7 @@ class _FormScreenState extends State<FormScreen> {
                   default:
                     chosenMode = ThemeMode.dark;
                 }
-                temaController.changeThema(chosenMode);
+                temaController.changeTheme(chosenMode);
               },
               icon: const Icon(Icons.change_circle),
             ),
@@ -122,17 +127,18 @@ class _FormScreenState extends State<FormScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       focusNode: emailFocusNode,
-                      validator: (String? value) {
-                        if (value != null && value.isEmpty) {
-                          return 'Insira o email';
-                        }
-
-                        return null;
+                      validator: emailValueObject.validate,
+                      onChanged: (value) {
+                        emailValueObject = EmailValueObject(value: value);
+                        setState(() {
+                          emailError = emailValueObject.validate(value);
+                        });
                       },
                       controller: emailController,
                       textAlign: TextAlign.center,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        errorText: emailError,
+                        border: const OutlineInputBorder(),
                         hintText: 'Email',
                         fillColor: Colors.white70,
                         filled: true,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class TemaController {
+class ThemeController {
   final themeMode = ValueNotifier(ThemeMode.system);
 
-  void changeThema(ThemeMode themeMode) {
+  void changeTheme(ThemeMode themeMode) {
     this.themeMode.value = themeMode;
   }
 }

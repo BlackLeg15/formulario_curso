@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:formulario_curso/controllers/tema_controller.dart';
-import 'package:formulario_curso/screens/form_screen.dart';
-import 'package:formulario_curso/widgets/theme_inherited_widget.dart';
+import 'package:formulario_curso/app/core/theme/theme_controller.dart';
+import 'package:formulario_curso/app/core/theme/theme_inherited_widget.dart';
+import 'package:formulario_curso/app/features/form/presenter/form_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,7 +9,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
-  final TemaController _temaController = TemaController();
+  final ThemeController _temaController = ThemeController();
 
   @override
   Widget build(BuildContext context) {

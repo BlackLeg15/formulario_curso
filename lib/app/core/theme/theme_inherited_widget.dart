@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
-import 'package:formulario_curso/controllers/tema_controller.dart';
+import 'package:formulario_curso/app/core/theme/theme_controller.dart';
 
 class ThemeInheritedWidget extends InheritedWidget {
-  final TemaController temaController;
+  final ThemeController temaController;
   const ThemeInheritedWidget({super.key, required super.child, required this.temaController});
 
   @override
