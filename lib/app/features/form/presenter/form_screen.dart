@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formulario_curso/app/core/theme/theme_event.dart';
+import 'package:formulario_curso/app/core/theme/theme_state.dart';
 import 'package:formulario_curso/app/features/form/domain/value_objects/email_value_object.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
@@ -60,27 +65,36 @@ class _FormScreenState extends State<FormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeInheritedWidget = context.getInheritedWidgetOfExactType<ThemeInheritedWidget>()!;
     return Form(
       key: _formKey,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Formulario'),
           actions: [
-            IconButton(
-              onPressed: () {
-                final themeInheritedWidget = context.getInheritedWidgetOfExactType<ThemeInheritedWidget>()!;
-                final temaController = themeInheritedWidget.temaController;
-                late ThemeMode chosenMode;
-                switch (temaController.themeMode.value) {
-                  case ThemeMode.dark:
-                    chosenMode = ThemeMode.light;
-                    break;
-                  default:
-                    chosenMode = ThemeMode.dark;
+            BlocConsumer(
+              bloc: themeInheritedWidget.temaController,
+              listener: (context, state) {
+                if (state is ExceptionThemeState) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Uma exceção ocorreu')));
                 }
-                temaController.changeTheme(chosenMode);
               },
-              icon: const Icon(Icons.change_circle),
+              builder: (context, state) {
+                onPressedFunction() {
+                  final temaController = themeInheritedWidget.temaController;
+                  temaController.add(SwitchThemeEvent());
+                }
+
+                final void Function()? iconButtonFunction = switch (state) {
+                  LoadingThemeState() => null,
+                  _ => onPressedFunction,
+                };
+
+                return IconButton(
+                  onPressed: iconButtonFunction,
+                  icon: const Icon(Icons.change_circle),
+                );
+              },
             ),
           ],
         ),

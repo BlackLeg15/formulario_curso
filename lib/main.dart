@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:formulario_curso/app/core/theme/theme_controller.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formulario_curso/app/core/theme/theme_bloc.dart';
 import 'package:formulario_curso/app/core/theme/theme_inherited_widget.dart';
+import 'package:formulario_curso/app/core/theme/theme_state.dart';
 import 'package:formulario_curso/app/features/form/presenter/form_screen.dart';
 
 void main() {
@@ -9,7 +11,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
-  final ThemeController _temaController = ThemeController();
+  //final ThemeController _temaController = ThemeController();
+  final _temaController = ThemeBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -17,16 +20,17 @@ class MyApp extends StatelessWidget {
       temaController: _temaController,
       child: Builder(builder: (context) {
         final themeInheritedWidget = context.getInheritedWidgetOfExactType<ThemeInheritedWidget>()!;
-        final themeValueNotifier = themeInheritedWidget.temaController.themeMode;
-        return ValueListenableBuilder<ThemeMode>(
-            valueListenable: themeValueNotifier,
-            builder: (context, themeMode, child) {
+        final themeBloc = themeInheritedWidget.temaController;
+        return BlocBuilder<ThemeBloc, ThemeState>(
+            bloc: themeBloc,
+            builder: (context, state) {
               return MaterialApp(
                 title: 'Flutter Demo',
                 theme: ThemeData(primarySwatch: Colors.blue),
                 darkTheme: ThemeData.dark(),
-                themeMode: themeMode,
+                themeMode: state.themeMode,
                 home: const FormScreen(),
+                debugShowCheckedModeBanner: false,
               );
             });
       }),
