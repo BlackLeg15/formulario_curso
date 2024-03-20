@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formulario_curso/app/core/theme/theme_event.dart';
 import 'package:formulario_curso/app/core/theme/theme_state.dart';
 import 'package:formulario_curso/app/features/form/domain/value_objects/email_value_object.dart';
+import 'package:formulario_curso/app/features/form/domain/value_objects/name_value_object.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../../../core/theme/theme_inherited_widget.dart';
@@ -31,11 +30,15 @@ class _FormScreenState extends State<FormScreen> {
   late EmailValueObject emailValueObject;
   String? emailError;
 
+  late NameValueObject nameValueObject;
+  String? nameError;
+
   @override
   void initState() {
     super.initState();
     emailValueObject = const EmailValueObject(value: '');
     emailFocusNode = FocusNode();
+    nameValueObject = const NameValueObject(value: '');
     nameFocusNode = FocusNode();
     phoneFocusNode = FocusNode();
     phoneMask = MaskTextInputFormatter(
@@ -44,9 +47,9 @@ class _FormScreenState extends State<FormScreen> {
         '#': RegExp('\\d'),
       },
     );
-    Future.delayed(const Duration(milliseconds: 300), () {
-      nameFocusNode.requestFocus();
-    });
+    // Future.delayed(const Duration(milliseconds: 300), () {
+    //   nameFocusNode.requestFocus();
+    // });
   }
 
   void goNext() {
@@ -80,6 +83,14 @@ class _FormScreenState extends State<FormScreen> {
                 }
               },
               builder: (context, state) {
+                final icon = switch (state) {
+                  SuccessThemeState success => switch (success.themeMode) {
+                      ThemeMode.dark => Icons.light_mode_rounded,
+                      ThemeMode.light => Icons.dark_mode_rounded,
+                      _ => Icons.light_mode_rounded,
+                    },
+                  _ => Icons.light_mode_rounded,
+                };
                 onPressedFunction() {
                   final temaController = themeInheritedWidget.temaController;
                   temaController.add(SwitchThemeEvent());
@@ -92,7 +103,7 @@ class _FormScreenState extends State<FormScreen> {
 
                 return IconButton(
                   onPressed: iconButtonFunction,
-                  icon: const Icon(Icons.change_circle),
+                  icon: Icon(icon),
                 );
               },
             ),
@@ -116,18 +127,20 @@ class _FormScreenState extends State<FormScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      key: const Key('NameFormField'),
                       focusNode: nameFocusNode,
-                      validator: (String? value) {
-                        if (value != null && value.isEmpty) {
-                          return 'Insira o nome';
-                        }
-
-                        return null;
+                      validator: nameValueObject.validate,
+                      onChanged: (value) {
+                        nameValueObject = NameValueObject(value: value);
+                        setState(() {
+                          nameError = nameValueObject.validate(value);
+                        });
                       },
                       controller: nameController,
                       textAlign: TextAlign.center,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        errorText: nameError,
+                        border: const OutlineInputBorder(),
                         hintText: 'Nome',
                         fillColor: Colors.white70,
                         filled: true,
@@ -140,6 +153,7 @@ class _FormScreenState extends State<FormScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      key: const Key('EmailFormField'),
                       focusNode: emailFocusNode,
                       validator: emailValueObject.validate,
                       onChanged: (value) {
